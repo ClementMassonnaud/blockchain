@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="generator" content="pandoc" />
+            <title>My understanding of the bitcoin protocol</title>
+    
+    
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="template.css" />
+    
+    <!-- highlight.js for syntax highlighting -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/atom-one-dark.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <!-- add after bootstrap.min.css -->
+    <link rel="stylesheet" href="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.css"/>
+    
+          </head>
+  
+    <body data-spy="scroll" data-target="#toc">
+      
+      <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+          <span class="display-3">My understanding of the bitcoin protocol</span>
+          <h4 style="color: white;"></h4>
+        </div>
+      </div>
+
+      <div id="mainContainer" class="container.fluid">
+        <div class="row">
+          <div class="col-sm-2">
+            <!-- sidebar, which will move to the top on a small screen -->
+            <nav id="toc" data-toggle="toc" class="sticky-top"></nav>
+          </div>
+          
+          <div class="col-sm-8">
+<h1 id="what-are-the-issues-with-digital-money">What are the issues with digital money?</h1>
+<ul>
+<li>I could easily fake being someone else</li>
+<li>It’s hard to make all participants agree on the same history of transactions without a central authority
+<ul>
+<li>if I have the majority of nodes, I could write whatever transactions I want</li>
+<li>all nodes are not connected equally, so there is asymetry of information. Some nodes will hear some transactions, some will hear others.</li>
+</ul></li>
+</ul>
+<h1 id="i-could-fake-being-someone-else">I could fake being someone else</h1>
+<p>This is “easily” solved by public key cryptography</p>
+<h1 id="if-i-have-the-majority-of-nodes-i-could-write-whatever-transactions-i-want">If I have the majority of nodes, I could write whatever transactions I want</h1>
+<h2 id="whats-the-issue">What’s the issue?</h2>
+<p>You cannot really write any transaction.</p>
+<p>We need to think about what a transaction is, and what it means to make a fraudulent transaction. If I am malicious, the way to make profit from a transaction is to convince someone to send me something <em>in exchange</em> of what I am sending her, but actually never sending her anything (or taking it back), while keeping what I received.</p>
+<p>But for her to send me what I want in the first place, she needs to be convinced herself that the transaction is valid. Indeed, it doesn’t matter if I make 99.9% of the network fake that the transaction is valid, if she cannot verify it herself, she will not accept the transaction. A digital money protocol must be 100% trustless, so you will never accept a transaction even by trusting 99.9% of the network. You must be able to verify every transaction by yourself.</p>
+<p>So to make a fraudulent transaction, I would first need to send a valid transaction, say a coin to Alice, who will be able to confirm that it is valid. Then, I would need to wait to receive what I want in exchange, and secure it.</p>
+<p>But then, to <em>actually</em> make profit from the fraudulent transaction, I not only have to take my coin back, I aslo need to spend that same coin at least a second time. If I’m not able to do so, I’ve just deprived Alice of her coin, but I haven’t made a profit for myself, which would be pretty much worthless. So now, to spend my coin a second time, I need to convince someone else, say Bob, that the transaction to Alice actually never happened.</p>
+<p>So, to make a profit, I need to be able to re-write the history of the transactions, so that Bob thinks I never sent the coin to Alice. If I own 99.9% of the nodes in the network, this is pretty easy to do. Even if I own only 51% of the network, it would be a dispute between the nodes that think Alice’s transaction came first and the nodes that think it was Bob’s. And the majority would win.</p>
+<h2 id="how-do-we-deal-with-it">How do we deal with it?</h2>
+<p>We deal with this issue by making it quite hard to rewrite the history of transactions. We do that in two ways:</p>
+<ul>
+<li>it is computationally expensive to write a transaction. To write a transaction, we need to solve a puzzle by finding a random number, which is relatively hard to find. But once found, everyone in the network can verify that it is correct very easily. So if I want to convince Bob that the transaction with Alice never happened, I need to redo the computational work again, otherwise Bob will not consider the transaction valid.</li>
+<li>each transaction added to the ledger, actually each block of transactions, is linked to the previous block in such a way that, if I want to rewrite a transaction in a block in the middle of the chain, I not only need to rewrite that block, but also all subsequent blocks, adding to the computational expense.</li>
+</ul>
+<p>So, for a fraudulent transaction to be profitable, the reward must exceed the computational expense. Therefore, to be safe, Alice just has to wait a little bit to make sure that the computational work needed to rewrite her transaction makes it worthless to attempt it, even if the attacker controls a large proportion of the network.</p>
+          </div>
+        </div>
+      </div>
+      
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+    <!-- add after bootstrap.min.js -->
+    <script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script>
+    
+  </body>
+</html>
