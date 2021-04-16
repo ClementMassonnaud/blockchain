@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#==========================================================
+#                 NOTIF FOR CRYPTO PRICES
+#==========================================================
+
+# Export variables need for crontab
+dbus=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$(pgrep -u "$USER" i3 | head -n1)/environ | tr -d '\0' | cut -d= -f2- )
+export DBUS_SESSION_BUS_ADDRESS=$dbus
+export XDG_RUNTIME_DIR=/run/user/`id -u`
+export DISPLAY=:0
+
+## Open web browser on notification action
+goto_coinbase () {
+    /usr/bin/xdg-open "https://pro.coinbase.com/trade"
+}
+
+case "$1" in
+    "notif")
+        ACTION=$( /usr/bin/dunstify -a "cryptoNotif" --timeout 5000 --action="go,Trade" -u normal -i "coinbaseicon" "$2" )
+        ;;
+    "pump")
+        ACTION=$( /usr/bin/dunstify -a "pumpNotif" --timeout 5000 --action="go,Trade" -u normal -i "arrowdown" "$2" )
+        ;;
+    "dump")
+        ACTION=$( /usr/bin/dunstify -a "dumpNotif" --timeout 5000 --action="go,Trade" -u critical -i "arrowup" "$2" )
+        ;;
+esac
+
+case "$ACTION" in
+    "go")
+        goto_coinbase
+        ;;
+esac
