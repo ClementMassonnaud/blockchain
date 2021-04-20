@@ -9,7 +9,7 @@ prices_file = f'/home/{os.getlogin()}/.tmp/last-prices.json'
 products = ['BTC', 'ADA', 'ETH']
 threshold_pump = 5
 threshold_dump = -5
-delayNotif = 60*60 # seconds
+delayNotif = 3600 # seconds
 
 # Read last prices
 with open(prices_file) as f:
